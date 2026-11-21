@@ -217,8 +217,11 @@ footer b{color:#fff}
 .chips button:hover{background:#d5e0ea}
 .chips a.btn{width:100%;font-size:.85rem;padding:10px 14px}
 
+html.js .reveal{opacity:0;transform:translateY(22px);transition:opacity .65s ease,transform .65s ease}
+html.js .reveal.in{opacity:1;transform:none}
 @media(prefers-reduced-motion:reduce){
   *{scroll-behavior:auto !important;transition:none !important}
+  html.js .reveal{opacity:1;transform:none}
 }
 </style>
 </head>
@@ -278,7 +281,7 @@ footer b{color:#fff}
 <div class="band" aria-label="Trabajos y líneas de equipo">
   <figure><img src="img/hero-fabricacion.webp" alt="Estación de trabajo en acero inoxidable"><figcaption>Fabricación especial</figcaption></figure>
   <figure><img src="img/hero-refrigeracion.webp" alt="Refrigeradores verticales en una cocina profesional"><figcaption>Refrigeración</figcaption></figure>
-  <figure><img src="img/hero-proyecto.webp" alt="Cocina para restaurante, de un producto a un mega proyecto"><figcaption>Cocinas para restaurantes</figcaption></figure>
+  <figure><img src="img/proy-cocina.webp" alt="Pasillo de una cocina industrial en acero inoxidable"><figcaption>Cocinas para restaurantes</figcaption></figure>
 </div>
 
 <section id="catalogo">
@@ -559,7 +562,6 @@ footer b{color:#fff}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
 <script>
 (function(){
   var WA = 'https://wa.me/525521128404?text=';
@@ -649,28 +651,25 @@ footer b{color:#fff}
   openBtn.addEventListener('click', function(){ toggle(!box.classList.contains('on')); });
   document.getElementById('chat-close').addEventListener('click', function(){ toggle(false); });
 
-  if (window.gsap && window.ScrollTrigger && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
-    gsap.registerPlugin(ScrollTrigger);
+  document.documentElement.classList.add('js');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (window.gsap && !reduce){
     gsap.from('.hero .kicker, .hero h1, .hero .lead, .hero-actions', {y: 28, opacity: 0, duration: .9, stagger: .1, ease: 'power2.out', delay: .1});
     gsap.from('.hero-photos figure', {y: 24, opacity: 0, duration: 1, stagger: .12, ease: 'power2.out', delay: .15});
-    var reveal = {y: 28, opacity: 0, duration: .75, ease: 'power2.out'};
-    gsap.utils.toArray('#catalogo h2, #catalogo .sub, #proyectos h2, #proyectos .sub, #nosotros h2, .brands h2, #cotizar h2, #cotizar .sub').forEach(function(el){
-      gsap.from(el, Object.assign({}, reveal, {scrollTrigger: {trigger: el, start: 'top 88%', once: true}}));
-    });
-    gsap.from('.cat', {y: 30, opacity: 0, stagger: .1, duration: .7, ease: 'power2.out', scrollTrigger: {trigger: '.cats', start: 'top 82%', once: true}});
-    gsap.from('.card', {y: 24, opacity: 0, stagger: .04, duration: .55, ease: 'power2.out', scrollTrigger: {trigger: '#coccion .grid', start: 'top 85%', once: true}});
-    gsap.from('.step', {y: 30, opacity: 0, stagger: .1, duration: .7, ease: 'power2.out', scrollTrigger: {trigger: '.steps', start: 'top 82%', once: true}});
-    window.addEventListener('load', function(){
-      setTimeout(function(){
-        document.querySelectorAll('.hero .kicker, .hero h1, .hero .lead, .hero-actions, .hero-photos figure, #catalogo h2, #catalogo .sub, .cat, .card, .step').forEach(function(el){
-          var r = el.getBoundingClientRect();
-          if (getComputedStyle(el).opacity === '0' && r.bottom > 0 && r.top < (window.innerHeight + 40)) {
-            gsap.set(el, {clearProps: 'opacity,transform,visibility'});
-          }
-        });
-      }, 2500);
-    });
   }
+  var els = document.querySelectorAll('#catalogo h2, #catalogo .sub, .cat, .block, .card, #proyectos h2, #proyectos .sub, .step, .install, #nosotros h2, .who p, .who img, .brands h2, .brands .sub, .clients, #cotizar h2, #cotizar .sub, form, .info');
+  els.forEach(function(el){ el.classList.add('reveal'); });
+  if (!reduce && 'IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, {threshold: 0.08, rootMargin: '0px 0px -6% 0px'});
+    els.forEach(function(el){ io.observe(el); });
+  }
+  setTimeout(function(){
+    document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); });
+  }, 1800);
 })();
 </script>
 </body>
